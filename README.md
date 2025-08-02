@@ -1,1 +1,1 @@
-# Build-WebOS-and-deploy-embedded-firewall-SMACK-on-Raspberry-Pi-4
+# Build WebOS and deploy embedded firewall SMACK on Raspberry Pi 4
