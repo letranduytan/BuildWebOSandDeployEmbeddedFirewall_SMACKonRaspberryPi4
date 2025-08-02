@@ -34,7 +34,7 @@ This system is suitable for:
 - Secure gateways in IoT environments
 
 ---
-#Build webOS OSE and Deploy Firewall on Raspberry Pi 4
+# Build webOS OSE and Deploy Firewall on Raspberry Pi 4
 
 ## I. PREREQUISITES
 
