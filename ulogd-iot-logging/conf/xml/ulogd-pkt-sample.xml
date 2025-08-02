@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ulogd>
+  <packet>
+    <timestamp>2025-08-02T19:55:00Z</timestamp>
+    <oob>
+      <prefix>DROP</prefix>
+      <time_sec>1722624900</time_sec>
+      <time_usec>800000</time_usec>
+      <mark>0</mark>
+      <ifindex_in>2</ifindex_in>
+      <ifindex_out>0</ifindex_out>
+      <hook>1</hook>
+      <uid>0</uid>
+      <gid>0</gid>
+    </oob>
+    <mac>
+      <saddr>aa:bb:cc:dd:ee:ff</saddr>
+      <daddr>ff:ee:dd:cc:bb:aa</daddr>
+      <addr>aa:bb:cc:dd:ee:ff->ff:ee:dd:cc:bb:aa</addr>
+    </mac>
+    <ip>
+      <saddr>192.168.1.10</saddr>
+      <daddr>8.8.8.8</daddr>
+      <protocol>TCP</protocol>
+    </ip>
+    <tcp>
+      <sport>43210</sport>
+      <dport>80</dport>
+      <flags>SYN</flags>
+    </tcp>
+    <verdict>DROP</verdict>
+    <nflog_group>100</nflog_group>
+    <device>WebOS-RPi-FW</device>
+  </packet>
+</ulogd>

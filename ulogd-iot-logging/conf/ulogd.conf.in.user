@@ -1,0 +1,84 @@
+###############################################################
+# GLOBAL OPTIONS
+###############################################################
+
+[global]
+logfile="/var/log/ulogd.log"
+loglevel=3   # info level logging
+
+###############################################################
+# PLUGIN LOADING
+###############################################################
+
+# INPUT plugins
+plugin="/usr/lib/ulogd/ulogd_inppkt_NFLOG.so"
+plugin="/usr/lib/ulogd/ulogd_inpflow_NFCT.so"
+
+# FILTER plugins
+plugin="/usr/lib/ulogd/ulogd_raw2packet_BASE.so"
+plugin="/usr/lib/ulogd/ulogd_filter_IFINDEX.so"
+plugin="/usr/lib/ulogd/ulogd_filter_HWHDR.so"
+plugin="/usr/lib/ulogd/ulogd_filter_IP2STR.so"
+plugin="/usr/lib/ulogd/ulogd_filter_PRINTPKT.so"
+plugin="/usr/lib/ulogd/ulogd_filter_PRINTFLOW.so"
+
+# OUTPUT plugins
+plugin="/usr/lib/ulogd/ulogd_output_LOGEMU.so"
+plugin="/usr/lib/ulogd/ulogd_output_JSON.so"
+plugin="/usr/lib/ulogd/ulogd_output_SYSLOG.so"
+plugin="/usr/lib/ulogd/ulogd_output_XML.so"
+plugin="/usr/lib/ulogd/ulogd_output_GPRINT.so"
+plugin="/usr/lib/ulogd/ulogd_output_NACCT.so"
+plugin="/usr/lib/ulogd/ulogd_output_GRAPHITE.so"
+
+###############################################################
+# STACK CONFIGURATIONS
+###############################################################
+
+# Stack 1: Packet log to LOGEMU
+stack=nflog0:NFLOG,base0:BASE,ifi0:IFINDEX,hwhdr0:HWHDR,ip2str0:IP2STR,print1:PRINTPKT,full0:LOGEMU
+
+# Stack 2: Packet log to JSON
+stack=nflog2:NFLOG,base1:BASE,ifi1:IFINDEX,ip2str1:IP2STR,mac2str1:HWHDR,json1:JSON
+
+# Stack 3: Flow log from NFCT to LOGEMU
+stack=ct100:NFCT,ip2str2:IP2STR,printflow1:PRINTFLOW,custom:LOGEMU
+
+# Stack 4: Packet log to XML
+stack=log100:NFLOG,base2:BASE,ip2str3:IP2STR,xml1:XML
+
+###############################################################
+# INPUT CONFIGURATIONS
+###############################################################
+
+[nflog0]
+group=32
+
+[nflog2]
+group=34
+
+[ct100]
+pollinterval=1
+
+[log100]
+group=100
+
+###############################################################
+# OUTPUT CONFIGURATIONS
+###############################################################
+
+[full0]
+file="/var/log/full.log"
+sync=1
+
+[json1]
+file="/var/log/firewall_log.json"
+sync=1
+
+[custom]
+file="/var/log/custom.log"
+sync=1
+
+[xml1]
+directory="/var/log/ulogd_xml"
+sync=1

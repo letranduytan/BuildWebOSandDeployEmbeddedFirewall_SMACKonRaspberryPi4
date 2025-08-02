@@ -1,0 +1,35 @@
+{
+  "timestamp": "2025-08-02T19:52:00Z",
+  "oob": {
+    "prefix": "DROP",
+    "time": {
+      "sec": 1722624720,
+      "usec": 250000
+    },
+    "mark": 0,
+    "ifindex_in": 2,
+    "ifindex_out": 0,
+    "hook": 1,
+    "protocol": 2048,
+    "uid": 0,
+    "gid": 0
+  },
+  "mac": {
+    "saddr": "aa:bb:cc:dd:ee:ff",
+    "daddr": "ff:ee:dd:cc:bb:aa",
+    "addr": "aa:bb:cc:dd:ee:ff->ff:ee:dd:cc:bb:aa"
+  },
+  "ip": {
+    "saddr": "192.168.1.10",
+    "daddr": "8.8.8.8",
+    "protocol": "TCP"
+  },
+  "tcp": {
+    "sport": 43210,
+    "dport": 80,
+    "flags": "SYN"
+  },
+  "verdict": "DROP",
+  "nflog_group": 34,
+  "device": "WebOS-RPi-FW"
+}

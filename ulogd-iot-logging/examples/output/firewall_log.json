@@ -1,0 +1,26 @@
+{
+  "timestamp": "2025-08-02T20:03:00Z",
+  "oob": {
+    "prefix": "DROP",
+    "time": {
+      "sec": 1722625380,
+      "usec": 500000
+    },
+    "ifindex_in": 2,
+    "hook": 1
+  },
+  "mac": {
+    "addr": "aa:bb:cc:dd:ee:ff->ff:ee:dd:cc:bb:aa"
+  },
+  "ip": {
+    "saddr": "192.168.1.10",
+    "daddr": "8.8.8.8",
+    "protocol": "TCP"
+  },
+  "tcp": {
+    "sport": 43210,
+    "dport": 80,
+    "flags": "SYN"
+  },
+  "verdict": "DROP"
+}

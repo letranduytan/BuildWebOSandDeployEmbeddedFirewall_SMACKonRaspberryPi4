@@ -1,0 +1,1 @@
+stack=nflog0:NFLOG,base0:BASE,ifi0:IFINDEX,hwhdr0:HWHDR,ip2str0:IP2STR,print1:PRINTPKT,full0:LOGEMU

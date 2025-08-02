@@ -1,0 +1,1 @@
+stack=nflog2:NFLOG,base0:BASE,ifi0:IFINDEX,ip2str0:IP2STR,mac2str1:HWHDR,json1:JSON

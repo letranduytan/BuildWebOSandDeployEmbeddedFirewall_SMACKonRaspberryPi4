@@ -1,0 +1,13 @@
+{
+  "type": "dashboard",
+  "attributes": {
+    "title": "ULOGD Firewall Logs",
+    "description": "Visualize packet logs from ULOGD via JSON",
+    "panelsJSON": "[{\"type\":\"visualization\",\"id\":\"verdict_pie\",\"panelIndex\":\"1\",\"gridData\":{\"x\":0,\"y\":0,\"w\":6,\"h\":6},\"version\":\"7.10.0\"},{\"type\":\"visualization\",\"id\":\"protocol_bar\",\"panelIndex\":\"2\",\"gridData\":{\"x\":6,\"y\":0,\"w\":6,\"h\":6},\"version\":\"7.10.0\"},{\"type\":\"visualization\",\"id\":\"top_src_ip\",\"panelIndex\":\"3\",\"gridData\":{\"x\":0,\"y\":6,\"w\":12,\"h\":6},\"version\":\"7.10.0\"}]",
+    "optionsJSON": "{\"darkTheme\":true}",
+    "timeRestore": true,
+    "kibanaSavedObjectMeta": {
+      "searchSourceJSON": "{\"index\":\"ulogd-*\",\"query\":{\"language\":\"kuery\",\"query\":\"\"},\"filter\":[]}"
+    }
+  }
+}
