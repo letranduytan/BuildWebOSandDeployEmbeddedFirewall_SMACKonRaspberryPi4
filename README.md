@@ -7,7 +7,7 @@
 
 ## Overview
 
-This project is developed based on publicly shared resources from **LG Electronics R&D Vietnam – Da Nang branch**, serving training and research activities at the **LG-DUT Cybersecurity Lab**.
+This project is developed based on publicly shared resources from **LG Electronics R&D Vietnam – Da Nang branch**, serving training and research activities at the **LG Lab**.
 
 It focuses on building a **custom WebOS** embedded on **Raspberry Pi 4**, integrating key Linux security features to enhance embedded system security — especially for **automotive** and **edge devices**.
 
