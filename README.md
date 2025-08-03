@@ -64,7 +64,6 @@ sudo apt install build-essential cmake git curl autoconf automake bison flex gaw
 
 * Ensure SSH access to Raspberry Pi
 
----
 
 ## II. CONFIGURATIONS
 
@@ -166,7 +165,6 @@ sudo dd bs=4M if=webos-image-raspberrypi4-64.rootfs.wic of=/dev/sdX status=progr
 sudo umount /dev/sdX
 ```
 
----
 
 ## III. PROBLEMS & SOLUTIONS
 
@@ -184,7 +182,6 @@ sudo swapon /swapfile
 * Update `GARAGE_SIGN_PV` variable
 * Replace old checksum lines in `SRC_URI[]`
 
----
 
 ## IV. TESTING
 
@@ -194,8 +191,6 @@ Once image is flashed and running on Raspberry Pi:
 * Verify included utilities: `htop`, `tcpdump`, etc.
 * Confirm SMACK kernel support using: `dmesg | grep smack`
 
----
-
 ## V. APPENDIX
 
 Useful commands:
@@ -204,7 +199,7 @@ Useful commands:
 * `docker ps`, `docker system prune` — manage build containers
 * `oe-init-build-env` — reenter build environment
 
-
+---
 # Raspberry Pi Firewall for webOS OSE
 ### Related Documentation
 
@@ -212,7 +207,7 @@ Useful commands:
 * [Linux Iptables Pocket Reference](https://linuxbg.eu/books/Linux%20Iptables%20Pocket%20Reference.pdf)
 * [A Deep Dive into Iptables and Netfilter Architecture](https://www.digitalocean.com/community/tutorials/a-deep-dive-into-iptables-and-netfilter-architecture#the-filter-table)
 * [nftables](https://wiki.archlinux.org/title/Nftables)
-## Features
+## I. Features
 
 The firewall defends against:
 
@@ -225,9 +220,8 @@ The firewall defends against:
 | **LAND Attack**   | Drops packets with identical source and destination IP |
 | **Smurf Attack**  | Blocks all ICMP traffic to prevent amplification attacks |
 
----
 
-##  Rule Overview 
+##  II. Rule Overview 
 
 ###  Blacklist IP Set
 
@@ -257,7 +251,6 @@ ip protocol icmp drop
 * LAND attack protection
 * Drops all ICMP traffic to prevent Smurf attacks
 
----
 
 ###  Port-Scanning Chain
 
@@ -269,8 +262,6 @@ chain port-scanning {
 ```
 
 → Drops suspicious RST floods often seen in scanning.
-
----
 
 ###  INPUT Chain (SYN Flood & SSH Protection)
 
@@ -290,7 +281,7 @@ ip protocol tcp ct state new meter tcp_new_conn size 65535 {
 
 ---
 
-##  Deployment Instructions
+## III. Deployment Instructions
 
 1. Copy `rules.conf` to your device:
 
@@ -307,8 +298,89 @@ ip protocol tcp ct state new meter tcp_new_conn size 65535 {
    ```bash
    sudo systemctl enable nftables
    ```
+---
+# Scapy Attack Test Framework for Raspberry Pi (webOS OSE)
+
+##  I. Objective
+
+Simulate packet injection attacks:
+- Spoofed MAC address
+- Modified VLAN ID (802.1Q)
+- Fake IPv6 address
+- Embedded shell commands in TCP payloads
+
+Observe whether Raspberry Pi:
+- Executes the payload
+- Changes its configuration (IP, MAC, VLAN)
+- Can filter or reject malicious packets
+
+##  II. Components
+
+### Receiver: `listener.py` (on Raspberry Pi)
+
+- **Listens on**: `eth0` interface
+- **Packet filtering**: Accepts packets only from trusted MACs (editable)
+- **Payload parsing**: Accepts 3 types:
+  - `IPV6=<address>`
+  - `MAC=<new_mac>`
+  - `VLAN=<vlan_id>`
+- **Action**: Executes the change using system commands
+
+### Sender: `N16_1_15_2.py` + `md_fw_declare.py` (on Windows)
+
+- Uses **Scapy** to craft and send packets
+- Payload is embedded in a TCP over IPv6 over VLAN packet
+- Sends packets with spoofed MAC, VLAN 5, and target IPv6
+
+### CLI Menu (`md_fw_menu.py`)
+```
+
+----------------------- MENU ----------------------
+1\. \[Infor] Packet information
+2\. \[Send]  Packet Send
+0\. \[Exit]  Exit
+---------------------------------------------------
+
+````
+
+## III. Example Payloads
+
+Payloads sent in TCP body:
+```python
+"IPV6=fd53:1234:5678:5::99"
+"MAC=00:11:22:33:44:55"
+"VLAN=10"
+````
+
+Advanced payload to inject shell commands:
+
+```python
+"sh:ip link add link eth0 name eth0.5 type vlan id 5 && ip link set dev eth0.5 address AA:BB:CC:DD:EE:FF && ip link set dev eth0.5 up"
+```
+
+##  IV. Key Findings 
+
+* Scapy can bypass firewalls that operate at Layer 3–4 (IP/Port) because:
+
+  * It injects packets directly at Layer 2 (Ethernet)
+  * Listener captures packets **before** firewall applies filtering
+* Even when packet is blocked at network layer, **payload may still reach user-space apps** if interface is in **promiscuous mode**
+
+
+## V. Suggested Defenses (application-layer)
+
+* Disable **promiscuous mode** on network interface
+* Validate payload content before execution
+* Use **AppArmor** to sandbox Python
+* Monitor for dangerous patterns like `sh:`, `rm -rf`, `wget`
+* Run receivers with **no shell access / limited subprocess permissions**
 
 ---
+
+
+
+
+
 
 
 
