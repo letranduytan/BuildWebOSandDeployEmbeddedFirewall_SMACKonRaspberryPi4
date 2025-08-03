@@ -205,3 +205,113 @@ Useful commands:
 * `oe-init-build-env` — reenter build environment
 
 
+# Raspberry Pi Firewall for webOS OSE
+### Related Documentation
+
+* [ebtables/iptables interaction on a Linux-based bridge](https://ebtables.netfilter.org/br_fw_ia/br_fw_ia.html)
+* [Linux Iptables Pocket Reference](https://linuxbg.eu/books/Linux%20Iptables%20Pocket%20Reference.pdf)
+* [A Deep Dive into Iptables and Netfilter Architecture](https://www.digitalocean.com/community/tutorials/a-deep-dive-into-iptables-and-netfilter-architecture#the-filter-table)
+* [nftables](https://wiki.archlinux.org/title/Nftables)
+## 📌 Features
+
+The firewall defends against:
+
+| Attack Type       | Description |
+|------------------|-------------|
+| **Port Scanning** | Detects excessive RST packets and drops scan attempts |
+| **Stealth Scan**  | Drops malformed TCP packets (NULL, XMAS, FIN, etc.) |
+| **SYN Flood**     | Limits new TCP connections and validates handshake |
+| **IP Spoofing**   | Blocks traffic from reserved/bogon IP ranges |
+| **LAND Attack**   | Drops packets with identical source and destination IP |
+| **Smurf Attack**  | Blocks all ICMP traffic to prevent amplification attacks |
+
+---
+
+##  Rule Overview 
+
+###  Blacklist IP Set
+
+```nft
+table ip mangle {
+  set blacklist {
+    type ipv4_addr;
+    elements = { 10.0.0.0/12, ..., 255.255.255.255 }
+  }
+````
+
+### PREROUTING Chain (Anti-spoofing + Stealth + Smurf)
+
+```nft
+ct state invalid drop
+tcp flags != syn / fin,syn,rst,ack ct state new drop
+ct state new tcp option maxseg size != 536-65535 drop
+tcp flags ! fin,syn,rst,psh,ack,urg drop
+...
+ip saddr != 192.168.88.252 ip saddr @blacklist drop
+ip saddr 192.168.88.252 ip daddr 192.168.88.252 drop
+ip protocol icmp drop
+```
+
+* Blocks invalid packets and malformed TCP flags
+* Drops spoofed packets using a fast hash-based IP set
+* LAND attack protection
+* Drops all ICMP traffic to prevent Smurf attacks
+
+---
+
+###  Port-Scanning Chain
+
+```nft
+chain port-scanning {
+  tcp flags rst / fin,syn,rst,ack limit rate 1/second burst 2 return
+  drop
+}
+```
+
+→ Drops suspicious RST floods often seen in scanning.
+
+---
+
+###  INPUT Chain (SYN Flood & SSH Protection)
+
+```nft
+ip saddr 192.168.88.252 tcp dport 22 accept
+ct state established,related accept
+tcp flags & rst == rst limit rate 2/second burst 2 accept
+tcp flags & rst == rst drop
+ip protocol tcp ct state new meter tcp_new_conn size 65535 {
+  ip saddr limit rate over 60/second burst 20
+} drop
+```
+
+* Allows SSH only from trusted IP `192.168.88.252`
+* Throttles RST packets
+* SYN flood protection via connection rate limiting
+
+---
+
+##  Deployment Instructions
+
+1. Copy `rules.conf` to your device:
+
+   ```bash
+   sudo cp rules.conf /etc/nftables/
+   ```
+2. Apply the firewall rules:
+
+   ```bash
+   sudo nft -f /etc/nftables/rules.conf
+   ```
+3. Enable nftables on startup:
+
+   ```bash
+   sudo systemctl enable nftables
+   ```
+
+---
+
+
+
+
+
+
