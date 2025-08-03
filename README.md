@@ -212,7 +212,7 @@ Useful commands:
 * [Linux Iptables Pocket Reference](https://linuxbg.eu/books/Linux%20Iptables%20Pocket%20Reference.pdf)
 * [A Deep Dive into Iptables and Netfilter Architecture](https://www.digitalocean.com/community/tutorials/a-deep-dive-into-iptables-and-netfilter-architecture#the-filter-table)
 * [nftables](https://wiki.archlinux.org/title/Nftables)
-## 📌 Features
+## Features
 
 The firewall defends against:
 
