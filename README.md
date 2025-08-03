@@ -380,6 +380,266 @@ Advanced payload to inject shell commands:
 
 ---
 
+# Raspberry Pi Network Testing with IPv4 & IPv6
+
+## I. Hardware & Software Setup
+
+###  Hardware:
+- 3 Raspberry Pi 4
+- 1 Switch
+- Ethernet cables
+- Power supplies
+- Monitor via mini-HDMI (for debug)
+
+### Software Tools:
+- Python 3 with socket module
+- Linux CLI tools: `ip`, `ifconfig`, `ping`, `ping6`, `tcpdump`
+- Multicast tools: `ip maddr`, `sysctl`
+- For Anycast: **FRRouting (FRR)** with BGP/OSPF (optional)
+
+## II. Device Setup
+
+### IPv4 Addressing:
+```bash
+# Device 1 (sender)
+ip addr add 10.10.16.48/24 dev eth0
+
+# Device 2
+sysctl net.ipv4.icmp_echo_ignore_broadcasts=0
+ip addr add 10.10.16.108/24 dev eth0
+
+# Device 3
+sysctl net.ipv4.icmp_echo_ignore_broadcasts=0
+ip addr add 10.10.16.92/24 dev eth0
+````
+
+### IPv6 Addressing:
+
+```bash
+# Sender (Raspberry Pi 1)
+ip -6 addr add fd00::1/64 dev eth0
+
+# Receivers (Pi 2 & Pi 3) with Anycast
+ip -6 addr add fd00::100/128 dev eth0 nodad
+```
+
+## III. Testing Procedures
+
+### IPv4 Multicast
+
+* **Sender**: sends `b"robot"` to group `224.1.1.1`
+* **Receiver**: joins multicast group and listens via `receive1.py`
+* Outcome: Only group members receive the message
+
+### IPv4 Unicast
+
+* **Sender**: sends `b"test unicastv4"` directly to receiver IP
+* **Receiver**: listens on UDP port 5007
+
+### IPv4 Broadcast
+
+* **Sender**: sends to broadcast address (`10.10.16.255`)
+* **Receivers**: configured to accept and respond
+
+
+### IPv6 Multicast
+
+* **Sender**: sends to `ff04::111` on UDP port 10000
+* **Receivers**:
+
+  * `Receiver1` listens on `ff04::123` → ❌ no receive
+  * `Receiver2` listens on `ff04::111` → ✅ successful receive
+
+### IPv6 Unicast
+
+* **Sender**: sends to `fd53:1234:5678:5::39`
+* **Receiver**: listens on all interfaces, UDP port 10000
+
+### IPv6 Anycast
+
+* All receivers share address `fd00::100`
+* Packet delivered to **nearest available device**
+* When one Pi shuts down → traffic shifts automatically to the other
+
+
+
+## IV. Performance & Security Evaluation
+
+| Transmission | Model       | Pros                         | Cons                          | Performance |
+| ------------ | ----------- | ---------------------------- | ----------------------------- | ----------- |
+| Unicast      | 1 → 1       | Simple, secure               | Not scalable                  | High        |
+| Broadcast    | 1 → all     | Easy in LAN                  | Bandwidth waste, low security | Low         |
+| Multicast    | 1 → group   | Efficient group delivery     | Complex setup, sniffable      | High        |
+| Anycast      | 1 → nearest | Fast, fault-tolerant routing | Needs BGP, harder to test     | Very High   |
+
+---
+
+# ULOGD2 Packet Logging System on Raspberry Pi 
+
+## I. Required Tools
+
+| Component         | Description                                |
+|------------------|--------------------------------------------|
+| ulogd2           | Netfilter user-space logging daemon        |
+| iptables         | Used only to redirect packets to NFLOG     |
+| libjansson       | Enables JSON output in ulogd2              |
+| tcpdump          | Used to debug incoming packets             |
+| logrotate        | Manages log rotation                       |
+
+## II. Architecture Overview
+
+### Packet Flow
+
+```
+\[ Network Packet ]
+↓
+iptables rule:
+-j NFLOG
+↓
+\[ ulogd2: Input Plugin (NFLOG) ]
+↓
+\[ Filters: BASE, IP2STR, PRINTPKT ]
+↓
+\[ Output: JSON or LOGEMU ]
+↓
+/var/log/firewall\_log.json
+
+````
+
+## III. System Setup
+
+### Platform
+- Raspberry Pi 4
+- Ethernet-connected (eth0)
+- WebOS OSE (based on Yocto)
+
+
+## IV. ulogd2 Configuration
+
+### Install Dependencies
+```bash
+sudo apt install ulogd2 iptables libjansson4
+````
+
+### ulogd.conf File (`/etc/ulogd.conf`)
+
+```ini
+[global]
+logfile="/var/log/ulogd.log"
+loglevel=3
+
+plugin="/usr/lib/ulogd/ulogd_inppkt_NFLOG.so"
+plugin="/usr/lib/ulogd/ulogd_filter_BASE.so"
+plugin="/usr/lib/ulogd/ulogd_filter_IP2STR.so"
+plugin="/usr/lib/ulogd/ulogd_filter_PRINTPKT.so"
+plugin="/usr/lib/ulogd/ulogd_output_JSON.so"
+
+stack=nflog0:NFLOG,base0:BASE,ip2str0:IP2STR,print1:PRINTPKT,json1:JSON
+
+[nflog0]
+group=100
+
+[json1]
+file="/var/log/firewall_log.json"
+sync=1
+```
+
+> Ensure paths to `.so` plugins match your system.
+
+## V. iptables Logging Only (No Firewall Rules)
+
+To capture packets without filtering:
+
+```bash
+sudo iptables -I INPUT -j NFLOG --nflog-group 100
+```
+
+> You can also log output or forward chains similarly.
+
+To remove the rule:
+
+```bash
+sudo iptables -D INPUT -j NFLOG --nflog-group 100
+```
+
+## VI. Example Log Output (JSON)
+
+```json
+{
+  "raw.mac": "b8:27:eb:xx:yy:zz",
+  "ip.saddr": "192.168.0.5",
+  "ip.daddr": "192.168.0.1",
+  "ip.proto": 6,
+  "tcp.dport": 80,
+  "timestamp": "2025-08-03T15:21:33Z"
+}
+```
+## VII. Test with Scapy Packets
+
+### Send IPv4 Packet (Unicast TCP)
+
+```python
+from scapy.all import *
+packet = IP(dst="10.0.0.1")/TCP(dport=80, flags="S")
+send(packet)
+```
+
+### Send IPv6 Multicast Packet
+
+```python
+from scapy.all import *
+packet = IPv6(dst="ff02::1")/ICMPv6EchoRequest()
+send(packet)
+```
+
+> Logs are visible in `/var/log/firewall_log.json` or via `tail -f`.
+
+## VIII. Log Tuning Tips
+
+* Reduce CPU load:
+
+```bash
+iptables -A INPUT -m limit --limit 5/min -j NFLOG --nflog-group 100
+```
+
+* Group multiple packets per log write:
+
+```bash
+ulogd --nflog-qthreshold=20
+```
+
+* Log to RAM for performance:
+
+```ini
+[json1]
+file="/tmp/firewall_log.json"
+```
+
+* Use `logrotate` to manage disk space:
+
+```bash
+sudo nano /etc/logrotate.d/ulogd
+```
+
+```txt
+/var/log/firewall_log.json {
+  size 500k
+  rotate 4
+  compress
+  missingok
+  notifempty
+}
+```
+
+## IX. Conclusion
+
+* ulogd2 provides a **lightweight and efficient way to monitor packets** on embedded Linux.
+* Works even **without firewall rules** — using `-j NFLOG`.
+* Supports deep inspection via JSON for further automation.
+
+
+
+
 
 
 
