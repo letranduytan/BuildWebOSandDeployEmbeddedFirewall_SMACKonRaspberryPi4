@@ -165,6 +165,9 @@ sudo dd bs=4M if=webos-image-raspberrypi4-64.rootfs.wic of=/dev/sdX status=progr
 sudo umount /dev/sdX
 ```
 
+#### The Raspberry Pi 4 is connected to a power source, a LAN network, and a mini HDMI cable connected to a monitor
+![rasberrypi4](img/rasberrypi4.jpg)
+---
 
 ## III. PROBLEMS & SOLUTIONS
 
