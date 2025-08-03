@@ -36,6 +36,11 @@ This system is suitable for:
 ---
 # Build webOS OSE on Raspberry Pi 4
 
+### Related Documentation
+
+* [Building webOS OSE Guide](https://www.webosose.org/docs/guides/setup/building-webos-ose/)
+* [Flashing webOS OSE Guide](https://www.webosose.org/docs/guides/setup/flashing-webos-ose/)
+
 ## I. PREREQUISITES
 
 ### 1. Required Knowledge
