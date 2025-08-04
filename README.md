@@ -11,20 +11,72 @@ This project is developed based on publicly shared resources from **LG Electroni
 
 It focuses on building a **custom WebOS** embedded on **Raspberry Pi 4**, integrating key Linux security features to enhance embedded system security — especially for **automotive** and **edge devices**.
 
-## Key Features
+## 🔹 **Project Objective**
 
-- 🔧 **Customized WebOS Build**  
-  Modular OS build system tailored for Raspberry Pi 4.
+Develop and integrate a **firewall system** and **SMACK security mechanism** on a **WebOS-based Raspberry Pi device**, alongside performing security testing, open-source software vulnerability analysis, and memory protection enhancements.
 
-- 🔐 **Security Integration**
-  - **Firewall**: Configured using `nftables` to filter traffic, detect threats, and prevent unauthorized access.
-  - **SMACK (Simplified Mandatory Access Control Kernel)**: Enforces mandatory access control at the kernel level.
+### 🔹 **3. Main Project Components**
 
-## Objectives
+####  **1. Firewall Development and Integration**
 
-- Strengthen the security of embedded Linux-based systems
-- Provide a hands-on learning platform for security in automotive and IoT environments
-- Demonstrate practical integration of open-source Linux security features
+* Setup WebOS environment, GitLab repository, and kernel configurations
+* Implement firewall features:
+
+  * IP/Port blocking, whitelist management
+  * Protection against DDoS, SYN flood, ICMP flood
+  * Logging, traffic analysis, and rule customization
+* Perform integration testing on Raspberry Pi
+
+#### **2. SMACK Security Implementation**
+
+* Research and port SMACK (Security Module) to WebOS
+* Flash and configure SMACK in permissive/enforcing modes
+* Label system files and set security rules
+* Integrate with other features like Firewall, EV, and Music Player
+
+#### **3. Security Testing and Test Case Design**
+
+* Design detailed test cases based on predefined scenarios (STC1 – STC7)
+* Develop additional test cases based on understanding of SMACK/Firewall
+* Execute tests using tools like **Wireshark** and **Scapy**
+
+#### **4. Open Source Software Vulnerability Scan (OSSVS)**
+
+* Study **supply chain attacks** and tools:
+
+  * **Dependency-Check**
+  * **Fosslight-Yocto**
+* Generate CVE reports, triage vulnerabilities, apply patches
+* Create intermediate and final security reports
+
+#### **5. Memory Exploitation Protection (EM)**
+
+* Explore memory exploits (buffer overflow, shellcode, etc.)
+* Assess protection mechanisms: RELRO, NX, PIE, Canary, Fortify Source
+* Scan binaries using `checksec.sh`, adjust GCC compile flags to enhance security
+
+#### **6. OS Hardening (OSH)**
+
+* Customize OS hardening checklist based on RHEL for Raspberry Pi
+* Write and execute OSH scripts
+* Identify and resolve security issues in system configuration
+
+---
+
+## **Expected Outcomes**
+
+* A fully functional and secure **WebOS system** on Raspberry Pi with:
+
+  * Custom **firewall**
+  * Integrated **SMACK security**
+  * Hardened system and verified memory protection
+* Comprehensive reports on:
+
+  * OSS vulnerabilities
+  * Memory exploit mitigation
+  * OS security posture
+* Enhanced teamwork and technical skills under **Scrum methodology**
+
 
 ## Applications
 
