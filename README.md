@@ -61,8 +61,6 @@ Develop and integrate a **firewall system** and **SMACK security mechanism** on 
 * Write and execute OSH scripts
 * Identify and resolve security issues in system configuration
 
----
-
 ## **Expected Outcomes**
 
 * A fully functional and secure **WebOS system** on Raspberry Pi with:
@@ -217,6 +215,8 @@ sudo umount /dev/sdX
 
 #### The Raspberry Pi 4 is connected to a power source, a LAN network, and a mini HDMI cable connected to a monitor
 ![rasberrypi4](img/rasberrypi4.jpg)
+![rasberrypi4](img/webos.jpg)
+
 ---
 
 ## III. PROBLEMS & SOLUTIONS
