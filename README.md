@@ -11,10 +11,6 @@ This project is developed based on publicly shared resources from **LG Electroni
 
 It focuses on building a **custom WebOS** embedded on **Raspberry Pi 4**, integrating key Linux security features to enhance embedded system security — especially for **automotive** and **edge devices**.
 
-## **Project Objective**
-
-Develop and integrate a **firewall system** and **SMACK security mechanism** on a **WebOS-based Raspberry Pi device**, alongside performing security testing, open-source software vulnerability analysis, and memory protection enhancements.
-
 ### **Main Project Components**
 
 ####  **1. Firewall Development and Integration**
@@ -61,25 +57,6 @@ Develop and integrate a **firewall system** and **SMACK security mechanism** on 
 * Write and execute OSH scripts
 * Identify and resolve security issues in system configuration
 
-## **Expected Outcomes**
-
-* A fully functional and secure **WebOS system** on Raspberry Pi with:
-
-  * Custom **firewall**
-  * Integrated **SMACK security**
-  * Hardened system and verified memory protection
-* Comprehensive reports on:
-
-  * OSS vulnerabilities
-  * Memory exploit mitigation
-  * OS security posture
-
-## Applications
-
-This system is suitable for:
-- Automotive control units (ECUs)
-- Edge computing devices
-- Secure gateways in IoT environments
 
 ---
 # Build webOS OSE on Raspberry Pi 4
