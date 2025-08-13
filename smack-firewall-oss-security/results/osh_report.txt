@@ -1,0 +1,33 @@
+Running check_file.sh
+=== Checking for insecure dotfiles (.rhosts, .netrc, .forward) in user homes ===
+[OK] Dotfile scan complete
+
+Running check_permis_passwd.sh
+=== Checking file permissions of /etc/passwd and /etc/shadow ===
+[OK] /etc/passwd has correct permission 644
+[WARN] /etc/shadow has permission 400, expected 600
+
+Running check_root.sh
+=== Checking if root account is locked ===
+[WARN] Root account is not locked
+
+Running check_service.sh
+=== Checking insecure services (telnet, ftp, rsh, etc.) ===
+[OK] telnet service is not running
+[OK] ftp service is not running
+[OK] rsh service is not running
+[OK] rexec service is not running
+[OK] rlogin service is not running
+[OK] nfs service is not running
+
+Running check_ssh.sh
+=== Checking Dropbear SSH root login policy ===
+[OK] Dropbear allows root login
+
+Running check_user.sh
+=== Checking for system users with login shells ===
+[WARN] User sync has shell /bin/sync
+[WARN] User developer has shell /bin/sh
+[WARN] User _apt has shell /bin/sh
+[WARN] User pdmuser has shell /bin/sh
+
