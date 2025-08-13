@@ -664,6 +664,85 @@ sudo nano /etc/logrotate.d/ulogd
 * Works even **without firewall rules** — using `-j NFLOG`.
 * Supports deep inspection via JSON for further automation.
 
+# SMACK
+## 1. Tasks
+### SFT - Smack Functional Test
+**Test Scenarios (STC1 → STC8)**
+
+| STC | Test Objective | Result |
+|-----|---------------|--------|
+| STC1 | Verify smackfs mount | PASS - Mounted at `/sys/fs/smackfs` |
+| STC2 | Check enforcing/bring-up mode & kernel config | PASS - SMACK enabled, bring-up mode |
+| STC3 | Verify access rights in audit logs | PASS - Logs contain granted/denied actions |
+| STC4 | Verify process SMACK labels | PASS - Labels match policy |
+| STC5 | Allow access based on label | PASS |
+| STC6 | Deny access based on label | PASS |
+| STC7 | Log denied access | PASS |
+| STC8 | Check onlycap restrictions | PASS - Non-CAP_MAC_ADMIN cannot change rules |
+
+**Extended Tests**:  
+- Created Ethernet packets via `Scapy` to change IP, MAC, VLAN.  
+- Firewall environment setup.  
+- Packet filtering verification: Default drop, Accept/Deny rules, Flood attack mitigation, NAT/DNS tables.
+
+---
+
+### OSSVS - Open Source Software Vulnerability Scan
+
+#### OSSVS-1: Supply Chain Attack
+- Case study: **SolarWinds Hack**
+- Attack types: malicious update, compromised OSS libs, CI/CD attacks, hardware tampering.
+- Mitigation: SCA, SBOM, Zero Trust, CI/CD security.
+
+#### OSSVS-2: SBOM Management
+- **Tools**: `sbom-manager`, `meta-wr-sbom`, `fosslight-yocto`.
+- Result: Generated SBOM from Yocto build, identified dependencies & licenses.
+
+#### OSSVS-3: CVE Triage
+- Tested components: `curl`, `bash`, `sqlite`.
+- Example CVEs:
+  | CVE ID | CVSS | Status |
+  |--------|------|--------|
+  | CVE-2022-32207 | 9.8 | Patched |
+  | CVE-2022-27781 | 7.5 | Patched |
+- Conclusion: Yocto build already uses patched OSS versions.
+
+#### OSSVS-4:
+- No manual patching required; all CVEs were already mitigated.
+
+---
+
+### EM - Exploit Memory
+
+- **Typical Exploits**: Buffer Overflow (stack & heap), Shellcode injection.
+- **Memory Protection Mechanisms**:
+  | Mechanism | Target | Compiler Flag |
+  |-----------|--------|---------------|
+  | Stack Canary | Return addr | `-fstack-protector-strong` |
+  | NX/DEP | Stack/Heap non-exec | `-z noexecstack` |
+  | RELRO | GOT protection | `-Wl,-z,relro -Wl,-z,now` |
+  | Fortify Source | Safer libc | `-D_FORTIFY_SOURCE=2` |
+- **`checksec.sh` Results**: All main binaries have protections enabled.
+
+---
+
+### OSH - Operating System Hardening (Raspberry Pi)
+
+**Custom Checklist** based on RHEL hardening guide:
+- `/var/log` permissions
+- Verify `auditd` is active
+- Detect duplicate UID/GID
+- Disable root SSH login, enforce key-based authentication
+- Secure password-related files (`/etc/shadow`, `/etc/passwd`)
+
+---
+
+## Conclusion
+- **SMACK**: Fully functional, rules enforced and logged.
+- **Firewall**: Mitigates flood attacks, filters packets as configured.
+- **OSS Scan**: No high CVEs remaining after build.
+- **Memory Protection**: All binaries built with required security flags.
+- **OSH**: Raspberry Pi hardened with a tailored checklist.
 
 
 
